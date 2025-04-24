@@ -1,6 +1,6 @@
 # How to run?
 
-Open a terminal in project directory and copy the example environment into `.env`
+Open a terminal in project directory and coppy the example environment into `.env`
 
 ```
 cp env.example .env
@@ -18,8 +18,8 @@ docker-compose start
 ```
 Now you can open project. By default it is `http://127.0.0.1`.
 
-* `wordpress` – used to store and restore database dumps
-* `dump` – the location of your WordPress application
+* `wordpress` – the location of your WordPress application
+* `dump` – used to store and restore database dumps
 
 ### Stopping containers
 
