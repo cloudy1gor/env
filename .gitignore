@@ -1,0 +1,6 @@
+*.idea
+.env
+
+# To exclude some themes or plugins use the example bellow
+!/src/themes/theme-name
+!/src/plugins/plugin-name
