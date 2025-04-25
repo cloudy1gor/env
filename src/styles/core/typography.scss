@@ -1,0 +1,116 @@
+@use 'utils/forwards' as *;
+@use 'mixins/txt';
+@use 'mixins/media';
+@use 'core/fonts';
+
+.body {
+	color: $color;
+	font-weight: $fontWeight;
+	font-size: rem($fontSize);
+	font-family: $fontFamily;
+	line-height: $lineHeight;
+}
+
+.title {
+	position: relative;
+	margin-bottom: 2rem;
+	padding-bottom: 0.5rem;
+	color: $title;
+	transition: color 0.3s;
+	cursor: pointer;
+	@include txt.row($lc: 2);
+	@include media.max(md){
+		margin-left: rem(10);
+	}
+
+	&:hover {
+		color: $accent;
+	}
+
+	&:before {
+		content: "";
+		position: absolute;
+		border-bottom: rem(2) solid $title;
+		bottom: 0.25rem;
+		left: 0;
+		width: 70%;
+		transform: translateX(-50%);
+	}
+
+	&:after {
+		content: "";
+		position: absolute;
+		border-bottom: rem(2) solid $title;
+		bottom: 0;
+		left: 0;
+		width: 35%;
+		transform: translateX(-50%);
+	}
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+	margin: 0;
+	margin-bottom: 0.38rem;
+	line-height: 1.3;
+	letter-spacing: 1px;
+	font-weight: 700;
+	color: $title;
+	@extend %pt-700;
+}
+
+h1 {
+	margin-bottom: 0;
+	font-size: 3.052rem;
+	line-height: 1;
+	text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.8);
+
+	@include media.max(md) {
+		font-size: 2.441rem;
+	}
+}
+
+h2 {
+	font-size: 2.441rem;
+	font-style: italic;
+	text-shadow: 1px 0 0 rgba(0, 0, 0, 0.8);
+
+	@include media.max(md) {
+		font-size: 1.953rem;
+	}
+}
+
+h3 {
+	font-size: 1.653rem;
+
+	@include media.max(md) {
+		font-size: 1.363rem;
+	}
+}
+
+h4 {
+	font-size: 1.563rem;
+	letter-spacing: 10px;
+
+	@include media.max(md) {
+		font-size: 1.25rem;
+		letter-spacing: 6px;
+	}
+}
+
+h5 {
+	font-size: 1.25rem;
+}
+
+p,
+span {
+	color: #111111;
+}
+
+strong {
+	text-shadow: 0 0 black;
+}

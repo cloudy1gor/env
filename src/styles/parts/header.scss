@@ -1,0 +1,114 @@
+@use 'utils/forwards' as *;
+@use 'mixins/media';
+@use 'mixins/txt';
+@use 'core/fonts';
+@use 'sass:math';
+
+// Menu btn
+$_btn-width: 30;
+$_btn-height: 18;
+$_span-height: 2;
+$_span-bg: $white;
+
+.header {
+	&__inner {
+	}
+
+	&__menu {
+	}
+
+	& .menu {
+		@include media.max(md) {
+			// Mobile menu btn
+			&__btn {
+				position: relative;
+				z-index: $backdropZIndex + 2;
+
+				display: block;
+				// width: rem($_btn-width);
+				// height: rem($_btn-height);
+
+				// cursor: pointer;
+
+				// user-select: none;
+
+				width: rem(40);
+				height: rem(40);
+				// background: url(https://i.ibb.co/HrfVRcx/menu.png);
+				background: url("../images/menu.webp");
+				background-repeat: no-repeat;
+				background-size: rem(25);
+				background-position: center;
+				background-color: $accent;
+				cursor: pointer;
+				transition: 0.3s;
+
+				> span {
+					position: absolute;
+					// top: calc(50% - rem(math.div($_span-height, 2)));
+					// left: 0;
+
+					// width: 100%;
+					// height: rem($_span-height);
+
+					// background-color: #000;
+
+					// transition: 0.2s;
+
+					// &:first-child {
+					// 	top: 0;
+					// }
+
+					// &:last-child {
+					// 	top: auto;
+					// 	bottom: 0;
+					// }
+				}
+
+				&[aria-expanded='true'] {
+					& {
+						// background: url(https://i.ibb.co/rt3HybH/close.png);
+						background: url("../images/close.webp");
+						background-repeat: no-repeat;
+						background-size: rem(25);
+						background-position: center;
+						background-color: $accent;
+						cursor: pointer;
+					}
+
+					> span {
+						// transform: scale(0);
+
+						// &:first-child {
+						// 	top: calc(50% - rem(math.div($_span-height, 2)));
+
+						// 	transform: rotate(-45deg);
+						// }
+
+						// &:last-child {
+						// 	bottom: calc(50% - rem(math.div($_span-height, 2)));
+
+						// 	transform: rotate(45deg);
+						// }
+					}
+				}
+			}
+		}
+
+		// &__body {
+		// 	@include media.max(md) {
+		// 		&.--show {
+		// 		}
+		// 	}
+		// }
+
+		// &__list {
+		// }
+
+		// &__item {
+		// }
+
+		// &__link {
+		// }
+	}
+}
