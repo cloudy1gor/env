@@ -1,90 +1,86 @@
-version: '3'
-
+version: '3.8'
 services:
-  wp:
-    image: wordpress:${WP_VERSION}
+  wordpress:
+    build: 
+      context: ./.docker/wordpress/
+      args:
+        WORDPRESS_VERSION: ${WORDPRESS_VERSION}
+    depends_on:
+      - mysql
+    links:
+      - mysql
     ports:
-      - ${DOMAIN}:${PORT}:80
-    volumes:
-      - ./.docker/wp_php.ini:/usr/local/etc/php/conf.d/conf.ini
-      - ./wordpress:/var/www/html
+      - ${PORT}:80
+    restart: always
     environment:
-      WORDPRESS_DB_HOST: db
-      WORDPRESS_DB_NAME: "${DB_NAME}"
-      WORDPRESS_DB_USER: root
-      WORDPRESS_DB_PASSWORD: "${DB_ROOT_PASSWORD}"
+      WORDPRESS_DB_HOST: mysql:3306
+      WORDPRESS_DB_USER: ${WORDPRESS_DB_USER}
+      WORDPRESS_DB_PASSWORD: ${WORDPRESS_DB_PWD}
+      WORDPRESS_DB_NAME: ${WORDPRESS_DB_NAME}
       WORDPRESS_DEBUG: 0
-      WORDPRESS_TABLE_PREFIX: ${WP_TBL_PREFIX}
+      WORDPRESS_TABLE_PREFIX: ${WORDPRESS_TBL_PREFIX}
       WORDPRESS_CONFIG_EXTRA: |
         define('FS_METHOD', 'direct');
         define('SCRIPT_DEBUG', true);
-    depends_on:
-      - db
-    links:
-      - db
+    volumes:
+      - wordpress:/var/www/html/
+      - ./src/themes/:/var/www/html/wp-content/themes/
+      - ./src/plugins/:/var/www/html/wp-content/plugins/
 
-  db:
-    image: mysql:${DB_VERSION}
-    # platform: linux/x86_64
+  mysql:
+    image: mysql:${WORDPRESS_DB_VERSION}
     restart: always
     ports:
-      - ${DOMAIN}:3306:3306
-    command: [
-        '--character-set-server=utf8mb4',
-        '--collation-server=utf8mb4_unicode_ci'
-    ]
+      - ${MYSQL_PORT}:3306
     volumes:
-      - ./dump:/docker-entrypoint-initdb.d
-      - db_data:/var/lib/mysql
+      - db:/var/lib/mysql
     environment:
-      MYSQL_DATABASE: "${DB_NAME}"
-      MYSQL_ROOT_PASSWORD: "${DB_ROOT_PASSWORD}"
+      MYSQL_ROOT_PASSWORD: ${WORDPRESS_DB_PWD}
+      MYSQL_DATABASE: ${WORDPRESS_DB_NAME}
+      MYSQL_USER: ${WORDPRESS_DB_USER}
+      MYSQL_PASSWORD: ${WORDPRESS_DB_PWD}
     healthcheck:
-      test: mysqladmin ping -h 127.0.0.1 -u root --password=$$DB_ROOT_PASSWORD
+      test: mysqladmin ping -h 127.0.0.1 -u root --password=$$MYSQL_ROOT_PASSWORD
       interval: 5s
       retries: 10
-  pma:
-    image: phpmyadmin:latest
+
+  phpmyadmin:
+    image: phpmyadmin
     restart: always
-    environment:
-      PMA_HOST: db
-      PMA_PORT: 3306
-      PMA_USER: "root"
-      PMA_PASSWORD: "${DB_ROOT_PASSWORD}"
-      MYSQL_ROOT_PASSWORD: "${DB_ROOT_PASSWORD}"
-      UPLOAD_LIMIT: 50M
-      PMA_ARBITRARY: 1
     ports:
-      - ${DOMAIN}:8080:80
-    links:
-      - db:db
-    volumes:
-     - ./.docker/pma_php.ini:/usr/local/etc/php/conf.d/conf.ini
-     - ./.docker/pma_config.php:/etc/phpmyadmin/config.user.inc.php
+      - ${PHPMYADMIN_PORT}:80
+    environment:
+      - PMA_ARBITRARY=1
+      - PMA_HOST=mysql 
+      - PMA_USER=${WORDPRESS_DB_USER}
+      - PMA_PASSWORD=${WORDPRESS_DB_PWD}
 
   wpcli:
     image: wordpress:cli
+    links:
+      - mysql:mysql
     tty: true
     command: >
       /bin/sh -c '
-      sleep 15;
-      wp core install --path=/var/www/html --locale=${WP_LOCALE} --url=${DOMAIN}:${PORT} --title=${WP_BLOG_NAME} --admin_user=${WP_ADMIN_LOGIN} --admin_password=${WP_ADMIN_PASSWORD} --admin_email=${WP_ADMIN_EMAIL};
+      sleep 10;
+      wp core install --path="/var/www/html" --locale=${WORDPRESS_LOCALE} --url="${DOMAIN}:${PORT}" --title="${WORDPRESS_BLOG_NAME}" --admin_user=${WORDPRESS_ADMIN_LOGIN} --admin_password=${WORDPRESS_ADMIN_PWD} --admin_email=${WORDPRESS_ADMIN_EMAIL};
       '
     # user: xfs
     user: www-data
-    volumes:
-      - ./.docker/wp_php.ini:/usr/local/etc/php/conf.d/conf.ini
-      - ./wordpress:/var/www/html
     environment:
-      WORDPRESS_DB_HOST: db
-      WORDPRESS_DB_NAME: "${DB_NAME}"
-      WORDPRESS_DB_USER: root
-      WORDPRESS_DB_PASSWORD: "${DB_ROOT_PASSWORD}"
+      WORDPRESS_DB_HOST: mysql:3306
+      WORDPRESS_DB_USER: ${WORDPRESS_DB_USER}
+      WORDPRESS_DB_PASSWORD: ${WORDPRESS_DB_PWD}
+      WORDPRESS_DB_NAME: ${WORDPRESS_DB_NAME}
       WORDPRESS_DEBUG: 1
+    volumes:
+      - wordpress:/var/www/html/
     depends_on:
-      - db
-      - wp
-
+      mysql:
+        condition: service_healthy
+      wordpress:
+        condition: service_started
 
 volumes:
-  db_data:
+  wordpress:
+  db:

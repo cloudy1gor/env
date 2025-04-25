@@ -10,15 +10,16 @@ Edit the `.env` file to change env variables.
 Run project using:
 
 ```
+docker-compose build --no-cache
+```
+
+```
 docker-compose up -d
 ```
 
-```
-docker-compose start
-```
-Now you can open project. By default it is `http://127.0.0.1`.
+Now you can open project. By default it is `http://localhost:8001`.
 
-* `wordpress` – the location of your WordPress application
+* `src` – the location of your WordPress application
 * `dump` – used to store and restore database dumps
 
 ### Stopping containers
@@ -49,11 +50,17 @@ define('WP_SITEURL','http://wp-app.local');
 ```
 
 ```
-docker-compose up
+docker-compose up -d
 ```
 
 ### Creating database dumps
 
 ```
 ./export.sh
+```
+
+### Importing database dump
+
+```
+./import.sh
 ```
